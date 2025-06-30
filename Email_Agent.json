@@ -1,0 +1,450 @@
+{
+  "name": "Email Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.text }}",
+        "options": {
+          "systemMessage": "=You are an Email management Agent. you take in users text and perform email actions. You should always output the email in HTML and sign of the email with appreciation and \"Selvin\" Instead of \"Your name\".\n\n*Email Management tools*\n\n- Use \"SendEmail\" to send an email. Get the contact information from \"GetRecords\" and then proceed to write and send the email.\n- Use \"GetEmail\" to get an message ID\n- Use \"ReplyEmails\" to reply to an email. Retrieve the message ID from \"GetEmail\" and reply to the email\n- Use \"DeleteEmails\" to delete an email. Retrieve the message Id from \"GetEmail\" and delete the email\n- Use \"GetLabels\" to retrieve all the label Id in Gmail\n- Use \"AddLabels\" to add a label to an email. Create a Label and Retrieve the message Id from \"GetEmails\" and label Id from \"GetLabels\" then proceed to add the label to the email\n- Use \"CreateLabels\" to create a new Label\n\n##Final Notes\nCurrent date and time: {{ $now }}\nContact information: \"GetRecords\" tool \nGet the contact information from GetRecords tool only."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        360,
+        0
+      ],
+      "id": "120b4b5b-150f-43f8-8f1e-02e04a84b5d7",
+      "name": "AI Agent",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        120,
+        220
+      ],
+      "id": "ba6fef3d-2a94-40b6-843d-ab7d770191f4",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "TbSVNxHe1joJvqIX",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('To', ``, 'string') }}",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        300,
+        240
+      ],
+      "id": "bd5d2a42-77f1-4bd4-85ce-87fb18de4091",
+      "name": "SendEmails",
+      "webhookId": "3e0bb288-7138-47f4-b096-a566a11fdf23",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "YHPpaoDieJDlEV1s",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "limit": 10,
+        "filters": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        440,
+        240
+      ],
+      "id": "ab503465-d36b-4854-91da-4328cbd45b48",
+      "name": "GetEmail",
+      "webhookId": "68cc8111-5720-4b2b-8c34-1152c4a58884",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "YHPpaoDieJDlEV1s",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "reply",
+        "messageId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message_ID', ``, 'string') }}",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        600,
+        240
+      ],
+      "id": "14be438e-2ae2-43b8-9ba9-4d85f07c7d84",
+      "name": "ReplyEmails",
+      "webhookId": "96c2bd7d-6bf5-498d-af2d-e30cfc796fa5",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "YHPpaoDieJDlEV1s",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Telegram message\n**Takes in users query via Telegram** ",
+        "height": 280,
+        "width": 320
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -100,
+        -120
+      ],
+      "typeVersion": 1,
+      "id": "285ac2d5-ea0a-4603-844a-9740b76ea46b",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## EMAIL MANAGEMENT AGENT\n**Redirects users query to an email tool** ",
+        "height": 280,
+        "width": 320
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        320,
+        -120
+      ],
+      "typeVersion": 1,
+      "id": "01389e78-3cb2-43a0-8832-38de862d30f2",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## $500 worth Email Agent\n\n**Made by Zen AI**        ",
+        "height": 140,
+        "width": 420,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2500,
+        -20
+      ],
+      "typeVersion": 1,
+      "id": "e20c0b1a-a6be-4b43-9c6a-0dc07b4ab520",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "messageId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message_ID', ``, 'string') }}"
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        760,
+        240
+      ],
+      "id": "cc6566ab-a307-4035-9576-1513b0096aca",
+      "name": "DeleteEmails",
+      "webhookId": "1fe3a119-cb22-4a05-a64b-24b814c11069",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "YHPpaoDieJDlEV1s",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "label"
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        920,
+        240
+      ],
+      "id": "a0a151d7-85b4-488c-a758-735c00285f89",
+      "name": "GetEmails",
+      "webhookId": "f21ba79e-5911-4fbd-a964-1d7876e07647",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "YHPpaoDieJDlEV1s",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "label",
+        "operation": "create",
+        "name": "High priority",
+        "options": {
+          "labelListVisibility": "labelShow"
+        }
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        1080,
+        240
+      ],
+      "id": "c8b06cd8-4edd-48b3-8237-f4314a1f1cef",
+      "name": "CreateLabels",
+      "webhookId": "e94b15c8-3253-4470-a569-9dd7d29512d0",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "YHPpaoDieJDlEV1s",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "addLabels",
+        "messageId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message_ID', ``, 'string') }}",
+        "labelIds": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Label_Names_or_IDs', ``, 'string') }}"
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        1220,
+        240
+      ],
+      "id": "acfe3c06-1732-4104-afe9-430441f9110c",
+      "name": "AddLabels",
+      "webhookId": "30afc597-3332-4c32-a6dc-1eb0c5ec84e4",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "YHPpaoDieJDlEV1s",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "text"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "2a25455a-279b-41f3-9681-f69adc94fdca",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "28cc0262-c4bb-4359-b280-9011998b8c6c",
+              "name": "error",
+              "value": "Unable to perform the task, Please try again",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        860,
+        20
+      ],
+      "id": "1a9b1489-449d-464e-8bb9-f18a7abf4713",
+      "name": "Error"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0411b0fd-1baf-42bf-b7da-7651149389ef",
+              "name": "response",
+              "value": "={{ $json.output }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        860,
+        -160
+      ],
+      "id": "a5e1d97f-ba33-4225-870b-c893811a8c93",
+      "name": "Success"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SendEmails": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetEmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ReplyEmails": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Success",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DeleteEmails": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GetEmails": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CreateLabels": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AddLabels": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "any"
+  },
+  "versionId": "dfc817a7-fd47-476c-86da-af62aacbbde8",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "78087421e4b67f9fb21e2251191fbb543222f8d2c16c850fa045c28b0668c841"
+  },
+  "id": "NyPACpHNJRISBtLz",
+  "tags": []
+}

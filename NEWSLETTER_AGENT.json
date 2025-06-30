@@ -1,0 +1,507 @@
+{
+  "name": "NEWSLETTER AGENT",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -480,
+        -80
+      ],
+      "id": "78a0f26e-b408-4e30-9b2b-bf411cd941e0",
+      "name": "When chat message received",
+      "webhookId": "e87bb047-9c4c-43a4-9a81-c9ab3d13df6c"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4c02c04b-736b-4749-bc5a-d32f6723c9c0",
+              "name": "rss",
+              "value": "=[\n  \"https://rss.app/feeds/FEofzz70Yutm9AaV.xml\",\n\"https://rss.app/feeds/2L6tDp0m0Bmx1I5R.xml\"\n]\n\n",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -240,
+        -80
+      ],
+      "id": "cf7fab39-540f-4d63-9a83-8e31b528201b",
+      "name": "News RSS Feed"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "rss",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        20,
+        -80
+      ],
+      "id": "9e690d7f-42e2-4ac6-ae8c-df6e37352b6a",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.rss }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.rssFeedRead",
+      "typeVersion": 1.1,
+      "position": [
+        240,
+        -80
+      ],
+      "id": "a63d376a-d4ce-43c4-afe8-d9fc4939b952",
+      "name": "RSS Read"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d23d3701-6aee-41ca-a9aa-6fbd88861652",
+              "name": "title",
+              "value": "={{ $json.title }}",
+              "type": "string"
+            },
+            {
+              "id": "04f59839-a36f-4399-b380-41f4ff4cb591",
+              "name": "content",
+              "value": "={{ $json.content }}",
+              "type": "string"
+            },
+            {
+              "id": "115f7052-b996-4218-ab0c-942099c1dd8f",
+              "name": "date",
+              "value": "={{ $json.isoDate }}",
+              "type": "string"
+            },
+            {
+              "id": "c94560ca-5804-4a39-a538-2e7307108ee9",
+              "name": "link",
+              "value": "={{ $json.link }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        460,
+        -80
+      ],
+      "id": "d7120fc1-2721-44cb-9b39-7f830cca4bda",
+      "name": "Set and Normalize Feeds"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "memoryKey": "news_store_key"
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreInMemory",
+      "typeVersion": 1.1,
+      "position": [
+        680,
+        -80
+      ],
+      "id": "881e887f-6e24-4493-b491-2a8b9a774f40",
+      "name": "Store News Articles"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        580,
+        120
+      ],
+      "id": "ab8061df-7aa4-4a7c-b236-c7d89c2de6b4",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "gHCMGvlDkVugwN0j",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1,
+      "position": [
+        820,
+        140
+      ],
+      "id": "f8181b63-1358-483d-826a-1dc01eb04f06",
+      "name": "Default Data Loader"
+    },
+    {
+      "parameters": {
+        "chunkSize": 3000,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        920,
+        360
+      ],
+      "id": "105d32be-b3bc-454a-8256-225f24db0f48",
+      "name": "Recursive Character Text Splitter"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -660,
+        300
+      ],
+      "id": "1207a10f-d5e0-41a5-a7b6-037c045046af",
+      "name": "When clicking ‘Test workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1601b64f-046e-4a52-80ed-771a04fb4730",
+              "name": "Interests",
+              "value": "AI, games, gadgets",
+              "type": "string"
+            },
+            {
+              "id": "a2478522-9bb8-48ed-a5ea-77051a2d5285",
+              "name": "Number of news items to include",
+              "value": "10",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -460,
+        300
+      ],
+      "id": "2114c4e7-1d41-4717-af64-1ac4753586fb",
+      "name": "Topics of Interest"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "Summarize last week's news.",
+        "options": {
+          "systemMessage": "=Summarize the most relevant tech news published in the past 7 days.\nWrite in clear, concise, and easy-to-understand English, as if curating a weekly tech newsletter.\n\nPrioritize stories related to the following topics: {{ $json.Interests }}.\nIf those topics aren't present, choose the most impactful, widely reported, and noteworthy tech events from the week.\n\nFor each news item:\n\nProvide a short, informative summary (1–3 sentences max)\n\nInclude the article title and a direct link to the original source\n\nAvoid duplicate or highly similar stories\n\nInclude exactly {{ $json['Number of news items to include'] }} distinct news items.\nMaintain a tone that's friendly yet professional, suitable for a broad audience of tech enthusiasts."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        -240,
+        300
+      ],
+      "id": "386dc11a-080d-4e6f-83c7-016afd033f13",
+      "name": "News Reader Agent"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolName": "get_news",
+        "toolDescription": "Call this tool to get the latest news articles.",
+        "memoryKey": "news_store_key",
+        "topK": 20
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreInMemory",
+      "typeVersion": 1.1,
+      "position": [
+        -40,
+        540
+      ],
+      "id": "b1ad3421-02b1-4557-8226-6b8a5157c8a6",
+      "name": "Simple Vector Store"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -160,
+        680
+      ],
+      "id": "97653c57-1a63-4064-ab81-d83377281e83",
+      "name": "Embeddings OpenAI1",
+      "credentials": {
+        "openAiApi": {
+          "id": "gHCMGvlDkVugwN0j",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -280,
+        520
+      ],
+      "id": "187256c2-6099-474a-b101-72c5fff83599",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "gHCMGvlDkVugwN0j",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "markdownToHtml",
+        "markdown": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.markdown",
+      "typeVersion": 1,
+      "position": [
+        120,
+        300
+      ],
+      "id": "78518b54-a83a-4205-943f-22a2fef40c72",
+      "name": "Markdown"
+    },
+    {
+      "parameters": {
+        "sendTo": "selvinfernandes07@gmail.com",
+        "subject": "Newsletter Review",
+        "message": "={{ $json.data }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        340,
+        300
+      ],
+      "id": "3819b605-ff0b-445f-9142-81f96d04ffee",
+      "name": "Gmail",
+      "webhookId": "3ed6d661-456a-47d1-a253-d1963e405d67",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "vbshawKUPSSpuiff",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "News RSS Feed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "News RSS Feed": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "RSS Read",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Read": {
+      "main": [
+        [
+          {
+            "node": "Set and Normalize Feeds",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set and Normalize Feeds": {
+      "main": [
+        [
+          {
+            "node": "Store News Articles",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Store News Articles",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Store News Articles",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Topics of Interest",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Topics of Interest": {
+      "main": [
+        [
+          {
+            "node": "News Reader Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Vector Store": {
+      "ai_tool": [
+        [
+          {
+            "node": "News Reader Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Simple Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "News Reader Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "News Reader Agent": {
+      "main": [
+        [
+          {
+            "node": "Markdown",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Markdown": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "20a99732-b849-4f89-9d20-cbb5f0e130d0",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "08586e55bc2a285f8a505847be04e804afadb16e1d4857e462f504f9b93f3fb1"
+  },
+  "id": "RFzFpZI28THnzEho",
+  "tags": []
+}
